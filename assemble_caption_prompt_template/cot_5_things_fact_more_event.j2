@@ -1,0 +1,42 @@
+You are given:
+
+1. **News Summary**: A concise summary of the main points from the news article:
+"""{{ summary.fact }}"""
+
+2. **Image Description**: A detailed explanation of what is shown in the image, including visual elements and context:
+"""{{ generated_caption }}"""
+
+3. **Crawled caption**: The caption as it originally appeared with the image in the article:
+"""{{ crawl_caption }}"""
+
+4. **Keywords**: Important keywords, phrases, or named entities that must be included to optimize for CIDEr-based evaluation:
+"""{{ name_entity_keyword }}"""
+
+5. **Question-Answer Pairs**: QA pairs derived from the article that highlight key facts and contextual elements:
+"""{{ question_answer }}"""
+
+Think step by step to write a detailed caption. Start by reasoning through:
+
+1. What happened in the news event? Who is involved? When and where did it take place?
+2. Who or what is shown in the image?
+3. What are the subjects doing?
+4. What is the setting or background of the image?
+5. What emotions or symbolic elements are present?
+6. How does the image visually connect to the news story?
+
+
+
+After completing the reasoning, write a clear and descriptive one-paragraph caption that directly connects the image to the news event.
+Use simple, precise language and include all relevant keywords related to the image.
+The caption must stand alone and clearly convey the context, main entities, actions, and significance of the image, accurately reflecting the article’s content.
+Do not use general nouns such as “he,” “she,” “they,” “it,” “the city,” “the country,” or “the event” when specific named entities (e.g., people, places, organizations, events) are available in the keywords—always use the full name or title.
+Make sure all key entities visible or referenced in the image are explicitly mentioned.
+The caption should contain at least 5 sentences about the news event behind the image, the people involved and the importance of images related to the news story.
+
+Note: If the """name_entity_keyword""" or the """question_answer""" section is missing or empty, focus entirely on the other content—such as the news summary, image description, and QA pairs—to write a rich, fact-based, visually grounded caption.
+
+Only output the final caption.
+
+
+
+

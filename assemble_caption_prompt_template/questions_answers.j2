@@ -1,0 +1,31 @@
+You are given:
+
+1. **News Articls**: The full text of a news article providing context and details about a recent event:
+"""{{ article }}"""
+
+2. **Image Description**: A detailed explanation of what is shown in the image, including visual elements and context:
+"""{{ generated_caption }}"""
+
+3. **Crawled caption**: The caption as it originally appeared with the image in the article:
+"""{{ crawl_caption }}"""
+
+Your task is to generate a series of **informative question-and-answer pairs** that help readers understand the image, its connection to the news story, and the broader context of the event.
+
+Start by reasoning through the following:
+1. What happened in the news event? Who is involved? When and where did it take place?
+2. Who or what is shown in the image?
+3. What are the subjects doing?
+4. What is the setting or background of the image?
+5. What emotions or symbolic elements are present?
+6. How does the image visually reinforce the news article?
+
+Then, based on your reasoning, write as many **clear and concise Q&A pairs** as needed to fully capture:
+- Key facts (who, what, when, where, why, how)
+- Visual interpretation of the image
+- Emotional or symbolic elements
+- Historical, political, or social significance
+
+Each answer should be no longer than 2–3 sentences. Use a neutral, journalistic tone that is factual and informative.
+
+Only output the Q&A pairs.
+

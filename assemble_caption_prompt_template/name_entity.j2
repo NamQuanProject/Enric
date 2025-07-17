@@ -1,0 +1,28 @@
+You are given:
+
+1. **News Article**: The full text of a news article providing context and details about a recent event:
+"""{{ article }}"""
+
+2. **Image Description**: A detailed explanation of what is shown in the image, including visual elements and context:
+"""{{ generated_caption }}"""
+
+3. **Crawled Caption**: The caption as it originally appeared with the image in the article:
+"""{{ crawl_caption }}"""
+
+Your task is to extract a comprehensive list of **named entities** mentioned in the article and/or image that are **relevant to the image** and its news context.
+
+Step-by-step:
+1. Read the article and image description carefully.
+2. Identify all named entities (people, locations, organizations, dates, events, titles, etc.).
+3. Prioritize entities that appear visually in the image or are contextually important to understanding the image.
+4. Present your output as a **clean list of named entities**, grouped by type.
+
+Output format:
+- **People**:
+- **Organizations**:
+- **Locations**:
+- **Dates/Times**:
+- **Events**:
+- **Other (e.g., titles, objects, symbolic elements)**:
+
+Only return the list of named entities, organized by type.
