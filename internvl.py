@@ -12,7 +12,7 @@ import torch.nn as nn
 
 
 class CustonInternVLRetrievalModel():
-    def __init__(self, model_name = "OpenGVLab/InternVL-14B-224px" , device='cuda:0'):
+    def __init__(self, model_name = "OpenGVLab/InternVL-14B-224px" , device='cuda:7'):
         
         self.device = torch.device(device)
         self.model = AutoModel.from_pretrained(
@@ -40,12 +40,13 @@ class CustonInternVLRetrievalModel():
         embedding = embedding / embedding.norm(dim=-1, keepdim=True)
         return embedding
     
-    def encode_text(self, texts):
+    def encode_text(self, text):
         prefix = 'summarize:'
-        texts = [prefix + text for text in texts]
-        input_ids = self.tokenizer(texts, return_tensors='pt', max_length=80,
+        text = prefix + text 
+        input_ids = self.tokenizer([text], return_tensors='pt', max_length=80,
                       truncation=True, padding='max_length').input_ids.to(self.device)
         feature_text = self.model.encode_text(input_ids)
+        feature_text = feature_text / feature_text.norm(dim=-1, keepdim=True)
         return feature_text
 
     def compute_image_text_probs(self, image, text, mode='InternVL-G', is_image_path = False, soft_max = True):
@@ -114,9 +115,6 @@ class CustonInternVLRetrievalModel():
 
 class CustonInternVLCaptionModel():
     def __init__(self, model_name = 'OpenGVLab/InternVL2_5-8B' , device='cuda:0'):
-        
-    
-        
         self.device = torch.device(device)
         
         self.IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -175,18 +173,22 @@ class CustonInternVLCaptionModel():
         orig_width, orig_height = image.size
         aspect_ratio = orig_width / orig_height
 
+        # calculate the existing image aspect ratio
         target_ratios = set(
             (i, j) for n in range(min_num, max_num + 1) for i in range(1, n + 1) for j in range(1, n + 1) if
             i * j <= max_num and i * j >= min_num)
         target_ratios = sorted(target_ratios, key=lambda x: x[0] * x[1])
 
+        # find the closest aspect ratio to the target
         target_aspect_ratio = self.find_closest_aspect_ratio(
             aspect_ratio, target_ratios, orig_width, orig_height, image_size)
 
+        # calculate the target width and height
         target_width = image_size * target_aspect_ratio[0]
         target_height = image_size * target_aspect_ratio[1]
         blocks = target_aspect_ratio[0] * target_aspect_ratio[1]
 
+        # resize the image
         resized_img = image.resize((target_width, target_height))
         processed_images = []
         for i in range(blocks):
@@ -196,6 +198,7 @@ class CustonInternVLCaptionModel():
                 ((i % (target_width // image_size)) + 1) * image_size,
                 ((i // (target_width // image_size)) + 1) * image_size
             )
+            # split the image
             split_img = resized_img.crop(box)
             processed_images.append(split_img)
         assert len(processed_images) == blocks
@@ -228,11 +231,20 @@ class CustonInternVLCaptionModel():
             question = '<image>\nPlease describe detailed the image in a paragraph'
             response, history = self.model.chat(self.tokenizer, image, question, generation_config, history=None, return_history=True)
             return response
+    def generate__short_caption(self, image_path):
+        with torch.no_grad():
+            image = self.load_image(image_path, max_num=12).to(torch.bfloat16).to(self.device)
+            generation_config = dict(max_new_tokens=512, do_sample=True)
+
+
+            question = '<image>\nPlease describe the unique features espescially the posting human or the features of that image of the image in one or two sentence'
+            response, history = self.model.chat(self.tokenizer, image, question, generation_config, history=None, return_history=True)
+            return response
     
     
     def generate_captions(self, image_paths):
         num_patches_list = []
-        final_pixels = None
+        final_pixels = None  # <- initialize here
 
         for image_path in image_paths:
             
@@ -390,7 +402,7 @@ class CustonInternVLCaptionModel():
         
         return input_embeds
     
-   
+
     
     def get_embedding(self, tokenizer, pixel_values, question, generation_config, history=None, return_history=False,
             num_patches_list=None, IMG_START_TOKEN='<img>', IMG_END_TOKEN='</img>', IMG_CONTEXT_TOKEN='<IMG_CONTEXT>',

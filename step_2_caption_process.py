@@ -78,6 +78,7 @@ def compose_input(batch: dict, examples: list[dict]) -> dict:
     }
 
 def main(args):
+    CAPTION_INPUT_PATH = args.caption_input_path
     strat = args.strategy
     template_test = args.template_test
     qa = args.qa
@@ -120,6 +121,8 @@ if __name__ == "__main__":
                         help="Test and print loaded template strategies")
     parser.add_argument('--qa', action='store_true',
                         help="Test and print loaded template strategies")
+    parser.add_argument('--caption_input_path', type=Path, default=CAPTION_INPUT_PATH,
+                        help="Path to the caption input JSON file")
     parser.add_argument('--name_entity', action='store_true',
                         help="Test and print loaded template strategies")
     parser.add_argument('--model_type',type=str, default='llama',
