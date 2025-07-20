@@ -5,6 +5,7 @@ import json
 from tqdm import tqdm
 from llmassemblers import LLMAssembler
 import time
+from step_2_merge_all_elements import merge_function
 
 PROMPT_TEMPLATE_DIR = Path('./assemble_caption_prompt_template')
 RESULT_DIR = Path('./assemble_result')
@@ -79,6 +80,16 @@ def compose_input(batch: dict, examples: list[dict]) -> dict:
 
 def main(args):
     CAPTION_INPUT_PATH = args.caption_input_path
+    
+    merge_function(
+        generative_caption_path=args.generate_caption_path,
+        entity_name_path=args.name_entity,
+        question_answer_path=args.question_answer_path,
+        new_database_path=args.new_database_path,
+        output_path=CAPTION_INPUT_PATH
+    )
+
+
     strat = args.strategy
     template_test = args.template_test
     qa = args.qa
@@ -121,6 +132,12 @@ if __name__ == "__main__":
                         help="Test and print loaded template strategies")
     parser.add_argument('--qa', action='store_true',
                         help="Test and print loaded template strategies")
+    parser.add_argument('--generate_caption_path', type=Path, default=RESULT_DIR / 'final_rerank_private_test_detail_top1_caption.json',
+                        help="Path to the generated caption JSON file")
+    parser.add_argument('--question_answer_path', type=Path, default=RESULT_DIR / 'question_answer.json',
+                        help="Path to the question answer JSON file")
+    parser.add_argument('--new_database_path', type=Path, default=RESULT_DIR / 'new_database.json',
+                        help="Path to the new database JSON file")  
     parser.add_argument('--caption_input_path', type=Path, default=CAPTION_INPUT_PATH,
                         help="Path to the caption input JSON file")
     parser.add_argument('--name_entity', action='store_true',
