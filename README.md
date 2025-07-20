@@ -56,19 +56,51 @@ python step_1_reranking.py
 
 ### 🔹 Phase 2: Captioning & Semantic Reasoning
 
-4. **Generate Query Captions**
+4. **Create the crawling database**
+
+* Crawl articles and images from URLs in the origin database:
+
+  ```bash
+  python step_2_0_crawling.py
+  ```
+
+* Create Embeddings for crawled images:
+
+  ```bash
+  python step_1_create_embeddings.py --input_folder imgs --output_folder embeddings/maching_new_database_internvlg
+  ```
+
+* For each article, create a json file mapping the origin image and the crawled image
+
+  ```bash
+  python step_2_0_matching_image.py
+  ```
+
+* Create database_new.json
+
+  ```bash
+  python step_2_0_matching_database.py
+  ```
+
+* Create output corresponding to final_json_result/context_extraction_image_article.json
+
+  ```bash
+  python step_2_0_create_result.py
+  ```
+
+5. **Generate Query Captions**
 
 ```bash
 python step_2_create_caption_query.py
 ```
 
-5. **Retrieve First Article Summary**
+6. **Retrieve First Article Summary**
 
 ```bash
 python step_2_first_article_summary.py
 ```
 
-6. **Caption Enhancement via Strategies**
+7. **Caption Enhancement via Strategies**
 
 * Using Question Answering:
 
