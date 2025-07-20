@@ -79,7 +79,7 @@ python step_1_reranking.py
 * Create database_new.json
 
   ```bash
-  python step_2_0_matching_database.py
+  python step_2_0_new_database.py
   ```
 
 * Create output corresponding to final_json_result/context_extraction_image_article.json

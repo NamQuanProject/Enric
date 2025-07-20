@@ -13,17 +13,17 @@ from tqdm import tqdm
 # Configuration
 CONCURRENT_REQUESTS = 32
 TIMEOUT = 60
-INPUT_FILE = "./data/database/database.json"
-CRAWLED_DIR = Path("crawled")
-IMGS_DIR = Path("imgs")
+ORIGIN_DATABASE_JSON = "./data/database/database.json"
+CRAWLED_FOLDER = Path("crawled")
+NEW_IMG_FOLDER = Path("imgs")
 RETRIES = 8  # retry attempts
 BACKOFF = [1, 3, 5, 7, 9, 11, 13, 15]  # seconds backoff for retries
 
 ##################################################
 
 def prepare_dirs():
-    CRAWLED_DIR.mkdir(exist_ok=True)
-    IMGS_DIR.mkdir(exist_ok=True)
+    CRAWLED_FOLDER.mkdir(exist_ok=True)
+    NEW_IMG_FOLDER.mkdir(exist_ok=True)
 
 def normalize_url(url):
     return url if not url.startswith("//") else "https:" + url
@@ -139,7 +139,7 @@ async def parse_and_download(html, key, url, session):
                 img_bytes = await fetch_binary(session, img_url, key)
                 if not img_bytes:
                     continue
-                (IMGS_DIR / img_key).write_bytes(img_bytes)
+                (NEW_IMG_FOLDER / img_key).write_bytes(img_bytes)
                 
                 # find caption in <div class="image__metadata">
                 cap_div = img_div.find_next_sibling("div", class_="image__metadata")
@@ -173,7 +173,7 @@ async def parse_and_download(html, key, url, session):
 async def worker(session, queue, pbar):
     while True:
         key, url = await queue.get()
-        out = CRAWLED_DIR / f"{key}.json"
+        out = CRAWLED_FOLDER / f"{key}.json"
         if out.exists():
             pbar.update(1)
             queue.task_done()
@@ -189,7 +189,7 @@ async def worker(session, queue, pbar):
 
 async def main():
     prepare_dirs()
-    mapping = json.load(open(INPUT_FILE))
+    mapping = json.load(open(ORIGIN_DATABASE_JSON))
     total = len(mapping)
     q = asyncio.Queue()
     for k, e in mapping.items():

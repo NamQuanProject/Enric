@@ -8,30 +8,35 @@ from tqdm import tqdm
 
 
 # Configuration
-origin_img = Path("./data/database/database_origin/database_img")
-my_img = Path("imgs")
+ORIGIN_IMG_FOLDER = "./data/database/database_origin/database_img"
+NEW_IMG_FOLDER = "imgs"
+ORIGIN_DATABASE_JSON = "./data/database/database.json"
+CRAWLED_FOLDER = Path("crawled")
 
-with open("./data/database/database.json", "r", encoding="utf-8") as f:
+MATCHING_FOLDER = Path("matching-01-no-threshold")
+assert MATCHING_FOLDER.exists(), f"Directory {MATCHING_FOLDER} does not exist."
+WINDOW_LENGTH = 6400
+NUM_WORKERS = 64
+OUTPUT_PATH = "database_new.json"
+
+##################################################
+
+origin_img = Path(ORIGIN_IMG_FOLDER)
+my_img = Path(NEW_IMG_FOLDER)
+
+with open(ORIGIN_DATABASE_JSON, "r", encoding="utf-8") as f:
     origin_db = json.load(f)
 my_db = dict()
 
-filenames = list(os.listdir("crawled"))
+filenames = list(os.listdir(CRAWLED_FOLDER))
 for idx, filename in enumerate(filenames):
-    filepath = os.path.join("crawled", filename)
     key = filename.split(".")[0]
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(CRAWLED_FOLDER / filename, "r", encoding="utf-8") as f:
             data = json.load(f)
             my_db[key] = data
     except Exception as e:
         print(f"Error reading {filename} at index {idx}: {e}")
-
-
-MATCHING_DIR = Path("matching-01-no-threshold")
-assert MATCHING_DIR.exists(), f"Directory {MATCHING_DIR} does not exist."
-WINDOW_LENGTH = 6400
-NUM_WORKERS = 64
-OUTPUT_PATH = "database_new.json"
 
 ##################################################
 
@@ -61,7 +66,7 @@ def process_key(key):
             "word_count": 0,
             "reading_time_minutes": 0,
         }
-    matching_file = MATCHING_DIR / f"{key}.json"
+    matching_file = MATCHING_FOLDER / f"{key}.json"
     if matching_file.exists():
         with open(matching_file, "r", encoding="utf-8") as f:
             matching_data = json.load(f)

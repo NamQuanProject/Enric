@@ -7,8 +7,13 @@ from pathlib import Path
 
 # Configuration
 OUTPUT_PATH = "result-hoang.json"
+DATABASE_NEW_JSON = "./database_new.json"
+CRAWLED_FOLDER = Path("crawled")
+CONTEXT_EXTRACTION_IMAGE_ARTICLE = "./final_json_result/context_extraction_image_article.json"
 
-with open("./database_new.json", 'r', encoding="utf-8") as f:
+##################################################
+
+with open(DATABASE_NEW_JSON, 'r', encoding="utf-8") as f:
     database_new = json.load(f)
 images_info = dict()
 for _, v in database_new.items():
@@ -16,13 +21,13 @@ for _, v in database_new.items():
         images_info[data["id"]] = data
 
 captions = {} # {url: alt}
-filenames = os.listdir("crawled")
+filenames = os.listdir(CRAWLED_FOLDER)
 for filename in filenames:
-    with open(f"crawled/{filename}", 'r', encoding="utf-8") as f:
+    with open(CRAWLED_FOLDER / filename, 'r', encoding="utf-8") as f:
         data = json.load(f)
         for obj in data["images"]:
             captions[obj["url"]] = obj
-with open("./final_json_result/context_extraction_image_article.json", 'r', encoding="utf-8") as f:
+with open(CONTEXT_EXTRACTION_IMAGE_ARTICLE, 'r', encoding="utf-8") as f:
     queries = json.load(f)
 
 ##################################################

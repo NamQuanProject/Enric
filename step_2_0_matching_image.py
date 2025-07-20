@@ -10,33 +10,39 @@ import torch
 
 # Configuration
 THRESHOLD_PIXEL_DIFF = 0.01  # Threshold for pixel difference in image comparison
-matching_dir = Path("matching-01-no-threshold")
+OUTPUT_MATCHING_FOLDER = "matching-01-no-threshold"
+ORIGIN_EMBEDDING = "../embeddings/database_image_internVL_g"
+NEW_EMBEDDING = "../embeddings/maching_new_database_internvlg"
+ORIGIN_IMG_FOLDER = "./data/database/database_origin/database_img"
+NEW_IMG_FOLDER = "imgs"
+ORIGIN_DATABASE_JSON = "./data/database/database.json"
+CRAWLED_FOLDER = Path("crawled")
+
+##################################################
+
+matching_dir = Path(OUTPUT_MATCHING_FOLDER)
 os.makedirs(matching_dir, exist_ok=True)
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
-origin_embedding = Path("../embeddings/database_image_internVL_g")
-my_embedding = Path("../embeddings/maching_new_database_internvlg")
+origin_embedding = Path(ORIGIN_EMBEDDING)
+my_embedding = Path(NEW_EMBEDDING)
+origin_img = Path(ORIGIN_IMG_FOLDER)
+my_img = Path(NEW_IMG_FOLDER)
 
-origin_img = Path("./data/database/database_origin/database_img")
-my_img = Path("imgs")
-
-with open("./data/database/database.json", "r", encoding="utf-8") as f:
+with open(ORIGIN_DATABASE_JSON, "r", encoding="utf-8") as f:
     origin_db = json.load(f)
 my_db = dict()
 
-filenames = list(os.listdir("crawled"))
+filenames = list(os.listdir(CRAWLED_FOLDER))
 for idx, filename in enumerate(filenames):
-    filepath = os.path.join("crawled", filename)
     key = filename.split(".")[0]
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(CRAWLED_FOLDER / filename, "r", encoding="utf-8") as f:
             data = json.load(f)
             my_db[key] = data
     except Exception as e:
         print(f"Error reading {filename} at index {idx}: {e}")
-
-##################################################
 
 # Get intersection of keys
 origin_keys = set(origin_db.keys())
@@ -44,6 +50,7 @@ my_keys = set(my_db.keys())
 key_intersection = origin_keys & my_keys
 print(f"Number of key intersections: {len(key_intersection)}")
 
+##################################################
 
 def load_images_from_list(img_dir, img_id_list, ext=".jpg"):
     img_dict = {}
